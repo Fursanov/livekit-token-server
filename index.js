@@ -21,8 +21,8 @@ app.post('/livekit/token', (req, res) => {
 
     // Создаем токен
     const token = new AccessToken(
-        process.env.LIVEKIT_API_KEY!,
-        process.env.LIVEKIT_API_SECRET!,
+        process.env.LIVEKIT_API_KEY,
+        process.env.LIVEKIT_API_SECRET,
         { identity: userId, name }
 );
 
