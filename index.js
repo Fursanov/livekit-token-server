@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post('/livekit/token', (req, res) => {
+app.post('/livekit/token', async (req, res) => {
     const { room, userId, name } = req.body;
 
     console.log('Incoming request body:', req.body);
@@ -19,14 +19,12 @@ app.post('/livekit/token', (req, res) => {
         return res.status(400).json({ error: 'Missing parameters' });
     }
 
-    // Создаем токен
     const token = new AccessToken(
         process.env.LIVEKIT_API_KEY,
         process.env.LIVEKIT_API_SECRET,
         { identity: userId, name }
     );
 
-    // Добавляем грант для комнаты
     token.addGrant({
         roomJoin: true,
         room: room,
@@ -34,11 +32,16 @@ app.post('/livekit/token', (req, res) => {
         canSubscribe: true,
     });
 
-    const jwt = token.toJwt();
-    console.log(`Generated token for user ${userId} in room ${room}:`, jwt);
-
-    res.json({ token: jwt });
+    try {
+        const jwt = await token.toJwt(); // ждём, пока Promise разрешится
+        console.log(`Generated token for user ${userId} in room ${room}:`, jwt);
+        res.json({ token: jwt });
+    } catch (err) {
+        console.error('Error generating token:', err);
+        res.status(500).json({ error: 'Failed to generate token' });
+    }
 });
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
