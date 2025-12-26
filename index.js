@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { AccessToken, RoomGrant } from 'livekit-server-sdk';
+import { AccessToken } from 'livekit-server-sdk';
 
 dotenv.config();
 
@@ -24,16 +24,15 @@ app.post('/livekit/token', (req, res) => {
         process.env.LIVEKIT_API_KEY,
         process.env.LIVEKIT_API_SECRET,
         { identity: userId, name }
-);
+    );
 
-    // Грант с указанием конкретной комнаты
-    const grant = new RoomGrant({
+    // Добавляем грант для комнаты
+    token.addGrant({
+        roomJoin: true,
         room: room,
         canPublish: true,
         canSubscribe: true,
     });
-
-    token.addGrant(grant);
 
     const jwt = token.toJwt();
     console.log(`Generated token for user ${userId} in room ${room}:`, jwt);
