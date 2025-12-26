@@ -33,11 +33,9 @@ app.post('/livekit/token', async (req, res) => {
     });
 
     try {
-        const jwt = await token.toJwt(); // ждём, пока Promise разрешится
-        console.log(`Generated token for user ${userId} in room ${room}:`, jwt);
+        const jwt = await token.toJwt();
         res.json({ token: jwt });
     } catch (err) {
-        console.error('Error generating token:', err);
         res.status(500).json({ error: 'Failed to generate token' });
     }
 });
