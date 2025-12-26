@@ -12,7 +12,10 @@ app.use(express.json());
 app.post('/livekit/token', (req, res) => {
     const { room, userId, name } = req.body;
 
+    console.log('Incoming request body:', req.body);
+
     if (!room || !userId || !name) {
+        console.log('Missing parameters:', { room, userId, name });
         return res.status(400).json({ error: 'Missing parameters' });
     }
 
@@ -24,7 +27,10 @@ app.post('/livekit/token', (req, res) => {
 
     token.addGrant({ roomJoin: true, canPublish: true, canSubscribe: true });
 
-    res.json({ token: token.toJwt() });
+    const jwt = token.toJwt();
+    console.log(`Generated token for user ${userId} in room ${room}:`, jwt);
+
+    res.json({ token: jwt });
 });
 
 const port = process.env.PORT || 3000;
